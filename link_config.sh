@@ -1,6 +1,6 @@
 link_config() {
   local name=$1
-  local source="$HOME/dotfiles/config/$name"
+  local source="$HOME/Projects/dotfiles/config/$name"
   local target="$HOME/.config/$name"
 
   if [ -e "$target" ] && [ ! -L "$target" ]; then
