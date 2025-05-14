@@ -4,7 +4,7 @@
 
 # 🔒 Check if current user is TAS
 if [[ "$(whoami)" != "TAS" ]]; then
-    echo "🚫 ACCESS DENIED. Only the almighty TAS account may wield this power."
+    echo "🚫 ACCESS DENIED. Only the TAS account may run this command."
     exit 1
 fi
 

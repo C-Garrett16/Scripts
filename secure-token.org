@@ -1,6 +1,6 @@
-#+title: Secure Token Fix
+#+title: fixsecure
 :AUTHOR: Garrett Reid
-#+PROPERTY: header-args :tangle secure_token_fix.sh
+#+PROPERTY: header-args :tangle fixsecure
 
 
 * What is this?
@@ -11,48 +11,53 @@ This is a script to fix the Filevault Secure Token error on Macs. It will run in
 * Notes
 Command to pull list of user accounts: `dsci list /Users | grep -vE '^_|daemon|nobody|TAS'`
 
+
 #+begin_src bash
 
 #!/bin/bash
 
-# macOS SecureToken Fix Script - Step 1 Skeleton
+# fixsecure - macOS SecureToken Fix Tool (final production edition)
 
-while true; do
-    clear
+# 🔒 Check if current user is TAS
+if [[ "$(whoami)" != "TAS" ]]; then
+    echo "🚫 ACCESS DENIED. Only the TAS account may run this command."
+    exit 1
+fi
+
+function run_sysadminctl() {
+    local user="$1"
+    echo
     echo "==================================="
-    echo "   SecureToken Fixer - macOS"
+    echo "About to run sysadminctl on $user."
+    echo "You'll be prompted TWICE for the admin password"
+    echo "(TAS account), then for $user's password."
     echo "==================================="
     echo
+    read -p "Press Enter to proceed or CTRL+C to abort."
 
-    echo "Detected user accounts (excluding system & TAS):"
+    sudo sysadminctl -secureTokenOn "$user" -password - -adminUser TAS -adminPassword -
+
     echo
+    echo "==================================="
+    echo "Command completed for $user."
+    echo "==================================="
+}
 
-    # Get list of users, exclude system accounts + TAS
-    users=$(dscl . list /Users | grep -vE '^_|daemon|nobody|root|TAS')
+# === ARGUMENT MODE ===
+if [[ -n "$1" ]]; then
+    targetUser="$1"
+else
+    # === PROMPT MODE ===
+    read -p "Enter username to fix: " targetUser
+fi
 
-    echo "$users"
-    echo
-    echo "Enter the username to fix (or type 'q' to quit):"
-    read targetUser
-
-    if [[ "$targetUser" == "q" || "$targetUser" == "Q" ]]; then
-        echo "Bailing out... probably the smartest decision you've made today."
-        exit 0
-    fi
-
-    # Check if entered user exists
-    if id "$targetUser" &>/dev/null; then
-        echo "You selected user: $targetUser"
-        echo
-        # This is where the sysadminctl command will go later.
-        # For now we just loop.
-        echo "Pretend we're fixing $targetUser... (we're not yet)"
-        sleep 2
-    else
-        echo "No such user exists, dumbass. Try again."
-        sleep 2
-    fi
-done
+# === Sanity check ===
+if id "$targetUser" &>/dev/null; then
+    run_sysadminctl "$targetUser"
+else
+    echo "❌ User '$targetUser' does not exist. Exiting."
+    exit 1
+fi
 
 
 #+end_src
