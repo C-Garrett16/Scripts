@@ -3,7 +3,8 @@
 # fixsecure - macOS SecureToken Fix Tool (final production edition)
 
 # 🔒 Check if current user is TAS
-if [[ "$(whoami)" != "TAS" ]]; then
+user="$(whoami | tr '[:upper:]' '[:lower:]')"
+if [[ "$user" != "tas" ]]; then
     echo "🚫 ACCESS DENIED. Only the TAS account may run this command."
     exit 1
 fi
