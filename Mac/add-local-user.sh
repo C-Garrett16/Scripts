@@ -20,11 +20,11 @@ fi
 
 # Create the user
 echo "Creating user '$USERNAME'..."
-sudo sysadminctl -addUser "$USERNAME" -fullName "$FULLNAME" -password "$PASSWORD"
+sysadminctl -addUser "$USERNAME" -fullName "$FULLNAME" -password "$PASSWORD"
 
 # Make user admin if selected
 if [ "$ADMIN" = true ]; then
-    sudo dseditgroup -o edit -a "$USERNAME" -t user admin
+    dseditgroup -o edit -a "$USERNAME" -t user admin
     echo "User '$USERNAME' added to admin group."
 else
     echo "User '$USERNAME' created as a standard user."
