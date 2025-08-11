@@ -1,4 +1,5 @@
-#!/usr/bin/bash
+#!/bin/bash
+
 
 
 
@@ -16,19 +17,14 @@ else
     ADMIN=false
 fi
 
-# Check if user already exists
-if id "$USERNAME" &>/dev/null; then
-    echo "User '$USERNAME' already exists. Exiting."
-    exit 1
-fi
 
 # Create the user
 echo "Creating user '$USERNAME'..."
-sysadminctl -addUser "$USERNAME" -fullName "$FULLNAME" -password "$PASSWORD"
+sudo sysadminctl -addUser "$USERNAME" -fullName "$FULLNAME" -password "$PASSWORD"
 
 # Make user admin if selected
 if [ "$ADMIN" = true ]; then
-    dseditgroup -o edit -a "$USERNAME" -t user admin
+    sudo dseditgroup -o edit -a "$USERNAME" -t user admin
     echo "User '$USERNAME' added to admin group."
 else
     echo "User '$USERNAME' created as a standard user."
